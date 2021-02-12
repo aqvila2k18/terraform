@@ -5,12 +5,14 @@ provider "aws" {
 resource "aws_iam_role_policy" "ubuntu_policy" {
   name = "ubuntu_policy"
   role = aws_iam_role.ubuntu_role.id
-  policy = file ("role.policy.json")
+  policy = templatefile ("role.policy.json.tpl", {
+    res_buck = aws_s3_bucket.vsanextbucket.bucket,
+    res_sqs = aws_sqs_queue.terraform_queue.name
+  })
 }
 
 resource "aws_iam_role" "ubuntu_role" {
   name = "ubuntu_role"
-
   assume_role_policy = file ("role.json")
 }
 
